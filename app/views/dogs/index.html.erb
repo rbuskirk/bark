@@ -1,1 +1,11 @@
+<!-- begin index.html.erb -->
+<div class="d-flex justify-content-center">
+  <%= will_paginate @dogs %>
+</div>
+
 <%= render partial: 'thumbnail', collection: @dogs, as: :dog %>
+
+<div class="d-flex justify-content-center">
+  <%= will_paginate @dogs %>
+</div>
+<!-- end index.html.erb -->
