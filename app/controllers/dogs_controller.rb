@@ -4,7 +4,6 @@ class DogsController < ApplicationController
   # GET /dogs
   # GET /dogs.json
   def index
-    #@dogs = Dog.all
     @dogs = Dog.paginate(:page => params[:page], :per_page => 5)
   end
 
@@ -26,6 +25,7 @@ class DogsController < ApplicationController
   # POST /dogs.json
   def create
     @dog = Dog.new(dog_params)
+    @dog.user_id = current_user.id if current_user.present?
 
     respond_to do |format|
       if @dog.save
@@ -43,6 +43,8 @@ class DogsController < ApplicationController
   # PATCH/PUT /dogs/1
   # PATCH/PUT /dogs/1.json
   def update
+    redirect_back fallback_location: root_path, notice: 'User is not owner' unless owner?(@dog)
+
     respond_to do |format|
       if @dog.update(dog_params)
         @dog.images.attach(params[:dog][:image]) if params[:dog][:image].present?
@@ -59,6 +61,8 @@ class DogsController < ApplicationController
   # DELETE /dogs/1
   # DELETE /dogs/1.json
   def destroy
+    redirect_back fallback_location: root_path, notice: 'User is not owner' unless owner?(@dog)
+
     @dog.destroy
     respond_to do |format|
       format.html { redirect_to dogs_url, notice: 'Dog was successfully destroyed.' }
@@ -75,5 +79,9 @@ class DogsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def dog_params
       params.require(:dog).permit(:name, :description, :images)
+    end
+
+    def owner?(dog)
+      current_user == dog.user
     end
 end
