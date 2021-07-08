@@ -57,5 +57,4 @@ describe 'Dog resource', type: :feature do
     expect(page).to have_content("Dogs cannot be liked by their owners.")
   end
 
-
 end
