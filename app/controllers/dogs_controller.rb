@@ -1,5 +1,5 @@
 class DogsController < ApplicationController
-  before_action :set_dog, only: [:show, :edit, :update, :destroy]
+  before_action :set_dog, only: [:show, :edit, :like, :update, :destroy]
 
   # GET /dogs
   # GET /dogs.json
@@ -67,6 +67,20 @@ class DogsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to dogs_url, notice: 'Dog was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  # GET /dogs/1/like
+  # not the ideal solution as it will allow for users to like a dog more then once
+  def like
+    if owner?(@dog)
+      redirect_back fallback_location: root_path, notice: 'Dogs cannot be liked by their owners.' if owner?(@dog)
+    else
+      @dog.increment!(:likes, 1)
+      respond_to do |format|
+        format.html { redirect_to @dog, notice: 'Dog was successfully liked.' }
+        format.json { render :show, status: :ok, location: @dog }
+      end
     end
   end
 

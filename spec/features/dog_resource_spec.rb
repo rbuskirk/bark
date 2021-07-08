@@ -43,4 +43,19 @@ describe 'Dog resource', type: :feature do
     expect(page).not_to have_content("Delete #{dog.name}'s Profile")
   end
 
+  it 'allows a dog profile to be liked' do
+    dog = create(:dog)
+    visit like_dog_path(dog)
+    expect(dog.reload.likes).to eq(1)
+    expect(page).to have_content("Dog was successfully liked.")
+  end
+
+  it 'only allows a dog profile to be liked by non-owner' do
+    dog = create(:dog, user: @user)
+    visit like_dog_path(dog)
+    expect(dog.reload.likes).to eq(0)
+    expect(page).to have_content("Dogs cannot be liked by their owners.")
+  end
+
+
 end
